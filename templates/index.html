@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Portfolio Analysis</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stock Portfolio Analysis</h1>
+
+    <p>
+        <strong>Note:</strong> A free and reliable API for fetching quarterly sales and profit data for Indian stocks could not be found. Therefore, this feature has not been implemented.
+    </p>
+
+    {% if portfolio and portfolio.get('Success') %}
+        <h2>Your Portfolio</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Stock Code</th>
+                    <th>Quantity</th>
+                    <th>Average Price</th>
+                    <th>LTP</th>
+                    <th>% Change</th>
+                    <th>10D MA</th>
+                    <th>20D MA</th>
+                    <th>50D MA</th>
+                    <th>100D MA</th>
+                    <th>200D MA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for holding in portfolio['Success'] %}
+                <tr>
+                    <td>{{ holding.stock_code }}</td>
+                    <td>{{ holding.quantity }}</td>
+                    <td>{{ holding.average_price }}</td>
+                    <td>{{ holding.ltp }}</td>
+                    <td>{{ "%.2f"|format(holding.percent_change|float) }}%</td>
+                    {% if holding.moving_averages %}
+                        <td>{{ "%.2f"|format(holding.moving_averages.get('10_dma', 'N/A')|float) }}</td>
+                        <td>{{ "%.2f"|format(holding.moving_averages.get('20_dma', 'N/A')|float) }}</td>
+                        <td>{{ "%.2f"|format(holding.moving_averages.get('50_dma', 'N/A')|float) }}</td>
+                        <td>{{ "%.2f"|format(holding.moving_averages.get('100_dma', 'N/A')|float) }}</td>
+                        <td>{{ "%.2f"|format(holding.moving_averages.get('200_dma', 'N/A')|float) }}</td>
+                    {% else %}
+                        <td colspan="5">Moving Averages not available</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif portfolio and portfolio.get('Error') %}
+        <p>Error fetching portfolio: {{ portfolio.get('Error') }}</p>
+    {% else %}
+        <p><a href="/login">Login with ICICI Direct</a> to view your portfolio.</p>
+    {% endif %}
+
+</body>
+</html>
